@@ -58,13 +58,17 @@ class LoginInController : UIViewController {
         space.translatesAutoresizingMaskIntoConstraints = false
         return space
     }()
-    let imageView : UIImageView = {
+    lazy var imageView : UIImageView = {
         let image = UIImageView()
         image.image = UIImage(named: "pick")
         image.contentMode = .scaleAspectFill
         image.translatesAutoresizingMaskIntoConstraints = false
+        image.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapImage)))
+        image.isUserInteractionEnabled = true
         return image
     }()
+    
+   
     
     let registerButton : UIButton = {
         let button = UIButton(type: .system)
@@ -109,31 +113,7 @@ class LoginInController : UIViewController {
         emailHeightAnchor?.isActive = true
     }
     
-    @objc func handleRegister(){
-        
-        guard let email = emailTextField.text, let password = passWordTextField.text, let name = nameTextField.text else{
-            
-            fatalError("form is not correct")
-            return
-        }
-        
-        Auth.auth().createUser(withEmail: email, password: password) { (user, error) in
-           if error != nil {
-                print(error!)
-            return
-           }
-            let messageDB = Database.database().reference().child("userInfo").childByAutoId()
-            let values = ["name" : name, "email" : email]
-            
-            messageDB.updateChildValues(values, withCompletionBlock: { (err, ref) in
-                if err != nil {
-                    print(err!)
-                    return
-                }
-            })
-        }
-        
-    }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
