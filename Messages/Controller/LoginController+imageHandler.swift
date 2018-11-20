@@ -34,7 +34,9 @@ extension LoginInController : UIImagePickerControllerDelegate , UINavigationCont
                 print(error!)
                 return
             }
-            
+            guard let uid = user?.user.uid else{
+                fatalError()
+            }
             //store imageurl in storage
               let uniqueUid = NSUUID().uuidString
             var imageUrl : String?
@@ -52,6 +54,9 @@ extension LoginInController : UIImagePickerControllerDelegate , UINavigationCont
                             }else{
                                 print(url!)
                                 imageUrl = url?.absoluteString
+                               
+                                let values =  ["name" : name, "email" : email,"imageUrl":imageUrl] as? [String : AnyObject]
+                                 self.saveUserInfo(value: values!  , uid: uid)
                             }
                         })
                         
@@ -60,22 +65,19 @@ extension LoginInController : UIImagePickerControllerDelegate , UINavigationCont
                 
             }
             
-            if  let values =  ["name" : name, "email" : email,"imageUrl":imageUrl] as? [String : AnyObject]{
-                self.saveUserInfo(value: values  , user: user!)
-                
-            }else{
-                fatalError()
-            }
             
+            
+                
+           
             
         }
         
     }
     
-    func saveUserInfo(value:[String: AnyObject],user:AuthDataResult?){
+    func saveUserInfo(value:[String: AnyObject],uid:String){
         
         //save user info (name , email into database)
-        let messageDB = Database.database().reference().child("userInfo").child((user?.user.uid)!)
+        let messageDB = Database.database().reference().child("userInfo").child(uid)
         
         
         messageDB.updateChildValues(value, withCompletionBlock: { (err, ref) in

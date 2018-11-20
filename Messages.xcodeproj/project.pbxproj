@@ -17,6 +17,7 @@
 		0F1B2FA221A0AF16000D325A /* ContactController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F1B2FA121A0AF16000D325A /* ContactController.swift */; };
 		0F1B2FA621A0B407000D325A /* Users.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F1B2FA521A0B407000D325A /* Users.swift */; };
 		0F1B2FA821A33E2D000D325A /* LoginController+imageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F1B2FA721A33E2D000D325A /* LoginController+imageHandler.swift */; };
+		0F1B2FAA21A4AAAD000D325A /* ContactHelp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F1B2FA921A4AAAD000D325A /* ContactHelp.swift */; };
 		93865F996CE99BCD039D5097 /* Pods_Messages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4774C946391AF74E9F5CF34C /* Pods_Messages.framework */; };
 /* End PBXBuildFile section */
 
@@ -33,6 +34,7 @@
 		0F1B2FA121A0AF16000D325A /* ContactController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactController.swift; sourceTree = "<group>"; };
 		0F1B2FA521A0B407000D325A /* Users.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Users.swift; sourceTree = "<group>"; };
 		0F1B2FA721A33E2D000D325A /* LoginController+imageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LoginController+imageHandler.swift"; sourceTree = "<group>"; };
+		0F1B2FA921A4AAAD000D325A /* ContactHelp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactHelp.swift; sourceTree = "<group>"; };
 		12471757DE8C0DDE3B569CD2 /* Pods-Messages.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Messages.release.xcconfig"; path = "Pods/Target Support Files/Pods-Messages/Pods-Messages.release.xcconfig"; sourceTree = "<group>"; };
 		4774C946391AF74E9F5CF34C /* Pods_Messages.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Messages.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BEF594F99F12A0D384DC8490 /* Pods-Messages.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Messages.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Messages/Pods-Messages.debug.xcconfig"; sourceTree = "<group>"; };
@@ -90,6 +92,7 @@
 				0F1B2F9D219DF680000D325A /* LoginInController.swift */,
 				0F1B2FA121A0AF16000D325A /* ContactController.swift */,
 				0F1B2FA721A33E2D000D325A /* LoginController+imageHandler.swift */,
+				0F1B2FA921A4AAAD000D325A /* ContactHelp.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -247,6 +250,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0F1B2F8D219DDF2C000D325A /* MessageController.swift in Sources */,
+				0F1B2FAA21A4AAAD000D325A /* ContactHelp.swift in Sources */,
 				0F1B2F9E219DF680000D325A /* LoginInController.swift in Sources */,
 				0F1B2FA621A0B407000D325A /* Users.swift in Sources */,
 				0F1B2FA221A0AF16000D325A /* ContactController.swift in Sources */,
