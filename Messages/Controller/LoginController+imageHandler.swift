@@ -21,7 +21,31 @@ extension LoginInController : UIImagePickerControllerDelegate , UINavigationCont
         
     }
     @objc func handleRegister(){
-        
+        let titleSelected = toggleButton.titleForSegment(at: toggleButton.selectedSegmentIndex)
+        if titleSelected == "Login" {
+            print("press Login")
+            
+            guard let email = emailTextField.text, let password = passWordTextField.text else{
+
+                fatalError("form is not correct")
+                return
+            }
+            
+            Auth.auth().signIn(withEmail: email, password: password) { (user, err) in
+                if err != nil {
+                    print(err!)
+                    return
+                }else{
+                    print("Login in success")
+                    self.messageController.fetchUserDataAndNavBar()
+                    self.dismiss(animated: true, completion: nil)
+                }
+                
+            }
+            
+            return
+            
+        }
         
         guard let email = emailTextField.text, let password = passWordTextField.text, let name = nameTextField.text else{
             
@@ -40,30 +64,36 @@ extension LoginInController : UIImagePickerControllerDelegate , UINavigationCont
             //store imageurl in storage
               let uniqueUid = NSUUID().uuidString
             var imageUrl : String?
-            let store = Storage.storage().reference().child("imageFile/\(uniqueUid).png")
-            if let picUpload = self.imageView.image!.pngData() {
-                store.putData(picUpload, metadata: nil, completion: { (metadata, err) in
-                    if err != nil {
-                        fatalError("cannot save data, error is \(err)")
-                        return
-                    }else {
-                        store.downloadURL(completion: { (url, error) in
-                            if error != nil {
-                                fatalError("error exist")
-                                return
-                            }else{
-                                print(url!)
-                                imageUrl = url?.absoluteString
-                               
-                                let values =  ["name" : name, "email" : email,"imageUrl":imageUrl] as? [String : AnyObject]
-                                 self.saveUserInfo(value: values!  , uid: uid)
-                            }
-                        })
-                        
-                    }
-                })
+            let store = Storage.storage().reference().child("imageFile/\(uniqueUid).jpeg")
+            
+            if let imageCompress = self.imageView.image {
                 
+                if let picUpload = imageCompress.jpegData(compressionQuality: 0.1) {
+                    store.putData(picUpload, metadata: nil, completion: { (metadata, err) in
+                        if err != nil {
+                            fatalError("cannot save data, error is \(err)")
+                            return
+                        }else {
+                            store.downloadURL(completion: { (url, error) in
+                                if error != nil {
+                                    fatalError("error exist")
+                                    return
+                                }else{
+                                    print(url!)
+                                    imageUrl = url?.absoluteString
+                                    
+                                    let values =  ["name" : name, "email" : email,"imageUrl":imageUrl] as? [String : AnyObject]
+                                    self.saveUserInfo(value: values!  , uid: uid)
+                                }
+                            })
+                            
+                        }
+                    })
+                    
+                }
             }
+            
+            
             
             
             
@@ -85,7 +115,7 @@ extension LoginInController : UIImagePickerControllerDelegate , UINavigationCont
                 print(err!)
                 return
             }
-            
+            self.messageController.fetchUserDataAndNavBar()
             self.dismiss(animated: true, completion: nil)
         })
     }
