@@ -17,7 +17,7 @@ class ContactController : UITableViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelContact))
-        tableView.register(CustomerCell.self, forCellReuseIdentifier: cellId)
+        tableView.register(CustomCell.self, forCellReuseIdentifier: cellId)
         fetchData()
     }
     
@@ -33,13 +33,15 @@ class ContactController : UITableViewController{
         let auth = Database.database().reference().child("userInfo").observe(.childAdded) { (snapshot) in
           
             if let dic = snapshot.value as? Dictionary<String,String> {
-                print(dic)
+//                print(dic)
+                
                 let oneUser = Users()
                 
                 oneUser.name = dic["name"]
                 print(oneUser.name!)
                 oneUser.email = dic["email"]
                 oneUser.imageUrl = dic["imageUrl"]
+                oneUser.userId = snapshot.key
                 self.user.append(oneUser)
                 
                 self.tableView.reloadData()
@@ -60,9 +62,19 @@ class ContactController : UITableViewController{
         return  100
     }
     
+    var msgController : MessageController?
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        dismiss(animated: true, completion: nil)
+        print("dismiss success")
+        let navUser = user[indexPath.row]
+        
+            self.msgController?.tapToMessage(user:navUser)
+    }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! CustomerCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! CustomCell
         
         cell.textLabel?.text = user[indexPath.row].name
         cell.detailTextLabel?.text = user[indexPath.row].email
@@ -78,40 +90,3 @@ class ContactController : UITableViewController{
     
 }
 
-class CustomerCell : UITableViewCell {
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        textLabel?.frame = CGRect(x: 56, y: textLabel!.frame.origin.y-2, width: textLabel!.frame.width, height: textLabel!.frame.height)
-        detailTextLabel?.frame = CGRect(x: 56, y: detailTextLabel!.frame.origin.y-2, width: detailTextLabel!.frame.width, height: detailTextLabel!.frame.height)
-        
-        
-    }
-    
-    let imageCell : UIImageView = {
-        let img = UIImageView()
-        
-        img.contentMode = .scaleAspectFill
-        img.translatesAutoresizingMaskIntoConstraints = false
-        img.layer.cornerRadius = 20
-        img.layer.masksToBounds = true
-        return img
-    }()
-    
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
-        addSubview(imageCell)
-        imageCell.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 8).isActive = true
-        imageCell.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
-        imageCell.widthAnchor.constraint(equalToConstant: 40).isActive = true
-        imageCell.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    
-}

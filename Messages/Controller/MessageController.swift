@@ -11,8 +11,8 @@ import Firebase
 
 class MessageController: UITableViewController {
 
-    
-    
+    var msg = [Messages]()
+    let customCellId = "cusCellId"
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Log Out", style: .plain, target: self, action: #selector(handleLogOut))
@@ -20,12 +20,45 @@ class MessageController: UITableViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "new_message_icon"), style: .plain, target: self, action: #selector(writeNewMessage))
        checkIfUserLoginIn()
             
+        loadMessageAndContact()
+        tableView.register(CustomCell.self, forCellReuseIdentifier: customCellId)
+    }
+    
+    func loadMessageAndContact(){
+        let ref = Database.database().reference().child("Message").observe(.childAdded, with: { (snapshot) in
+            let ss = snapshot.value as! [String:AnyObject]
+            print(ss)
+            let mess = Messages()
+            mess.sendText = ss["sendtext"] as? String
+            mess.toId = ss["toId"] as? String
+            self.msg.append(mess)
+            self.tableView.reloadData()
             
+        }, withCancel: nil)
+        
         
     }
-   @objc func writeNewMessage(){
     
-        let contactController = UINavigationController(rootViewController: ContactController())
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return msg.count
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return  72
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let customCell = tableView.dequeueReusableCell(withIdentifier: customCellId, for: indexPath) as! CustomCell
+        let message = msg[indexPath.row]
+        
+        customCell.message = message
+        return customCell
+    }
+    
+   @objc func writeNewMessage(){
+        let contact = ContactController()
+        contact.msgController = self
+        let contactController = UINavigationController(rootViewController: contact)
         present(contactController,animated: true,completion: nil)
         
     }
@@ -70,10 +103,21 @@ class MessageController: UITableViewController {
     
     }
     
+   
+    
+     func tapToMessage(user:Users){
+        let chatController = ChatLogController(collectionViewLayout:UICollectionViewFlowLayout())
+        chatController.user = user
+        navigationController?.pushViewController(chatController, animated: true)
+        
+    }
+    
     func setUpNavIconAndName(user:Users){
         
         let titleContainer = UIView()
         titleContainer.frame = CGRect(x: 0, y: 0, width: 100, height: 40)
+//        titleContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapToMessage)))
+
         
         let container = UIView()
         container.translatesAutoresizingMaskIntoConstraints = false
@@ -86,6 +130,8 @@ class MessageController: UITableViewController {
         icon.layer.cornerRadius = 20
         icon.layer.masksToBounds = true
         icon.translatesAutoresizingMaskIntoConstraints = false
+
+        
         container.addSubview(icon)
         
         let textView = UILabel()
@@ -94,7 +140,6 @@ class MessageController: UITableViewController {
         }
         textView.font = UIFont.systemFont(ofSize: 15)
         textView.translatesAutoresizingMaskIntoConstraints = false
-        
         
         container.addSubview(textView)
         self.navigationItem.titleView = titleContainer

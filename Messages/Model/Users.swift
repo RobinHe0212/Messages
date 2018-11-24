@@ -9,7 +9,7 @@
 import UIKit
 class Users : NSObject {
     
-    
+    var userId : String?
     var email : String?
     var name : String?
     var imageUrl : String?
