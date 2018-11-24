@@ -22,16 +22,26 @@ class MessageController: UITableViewController {
             
         loadMessageAndContact()
         tableView.register(CustomCell.self, forCellReuseIdentifier: customCellId)
+        
     }
+    var messageDictionary = [String:Messages]()
     
     func loadMessageAndContact(){
         let ref = Database.database().reference().child("Message").observe(.childAdded, with: { (snapshot) in
             let ss = snapshot.value as! [String:AnyObject]
-            print(ss)
+           
             let mess = Messages()
             mess.sendText = ss["sendtext"] as? String
             mess.toId = ss["toId"] as? String
-            self.msg.append(mess)
+         //   self.msg.append(mess)
+            if let id = mess.toId {
+                
+                self.messageDictionary[id] = mess
+                print("values : \(self.messageDictionary[id])")
+                self.msg = Array(self.messageDictionary.values)
+                print("dictionary message: \(self.msg)")
+            }
+           
             self.tableView.reloadData()
             
         }, withCancel: nil)
@@ -111,6 +121,9 @@ class MessageController: UITableViewController {
         navigationController?.pushViewController(chatController, animated: true)
         
     }
+    
+    
+    
     
     func setUpNavIconAndName(user:Users){
         

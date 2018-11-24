@@ -22,12 +22,21 @@ class CustomCell : UITableViewCell {
                         if let image = dictionary["imageUrl"] as? String{
                             
                             self.imageCell.loadImageUsingCacheFromUrl(urlString: image)
+                            
                         }
                     }
                     
                 }, withCancel: nil)
                 
                 detailTextLabel?.text = message?.sendText
+                if let timeSeconds = (message?.timeStamp) as? Double {
+                    let timestampDate = NSDate(timeIntervalSince1970: timeSeconds)
+                    let dataFormatter = DateFormatter()
+                    dataFormatter.dateFormat = "hh:mm:ss a"
+                    timeLabel.text = timestampDate.description
+                }
+                
+                
                 
                 
             }
@@ -57,6 +66,12 @@ class CustomCell : UITableViewCell {
         return img
     }()
     
+    let timeLabel : UILabel = {
+        let tl = UILabel()
+        tl.translatesAutoresizingMaskIntoConstraints = false
+        return tl
+        
+    }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
@@ -65,6 +80,11 @@ class CustomCell : UITableViewCell {
         imageCell.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
         imageCell.widthAnchor.constraint(equalToConstant: 40).isActive = true
         imageCell.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        addSubview(timeLabel)
+        timeLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: 10).isActive = true
+        timeLabel.topAnchor.constraint(equalTo: self.topAnchor,constant: 15).isActive = true
+        timeLabel.heightAnchor.constraint(equalTo: textLabel!.heightAnchor).isActive = true
+        timeLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
         
     }
     
