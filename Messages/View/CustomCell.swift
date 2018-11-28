@@ -29,13 +29,13 @@ class CustomCell : UITableViewCell {
                 }, withCancel: nil)
                 
                 detailTextLabel?.text = message?.sendText
-                if let timeSeconds = (message?.timeStamp) as? Double {
-                    let timestampDate = NSDate(timeIntervalSince1970: timeSeconds)
+                if let timeSeconds = message?.timeStamp?.doubleValue {
+                    let timestampDate = NSDate(timeIntervalSince1970: timeSeconds) as Date
                     let dataFormatter = DateFormatter()
-                    dataFormatter.dateFormat = "hh:mm:ss a"
-                    timeLabel.text = timestampDate.description
+                    dataFormatter.dateFormat = "HH:mm MM-dd"
+                    timeLabel.text = dataFormatter.string(from: timestampDate)
                 }
-                
+               
                 
                 
                 
@@ -84,7 +84,7 @@ class CustomCell : UITableViewCell {
         timeLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: 10).isActive = true
         timeLabel.topAnchor.constraint(equalTo: self.topAnchor,constant: 15).isActive = true
         timeLabel.heightAnchor.constraint(equalTo: textLabel!.heightAnchor).isActive = true
-        timeLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        timeLabel.widthAnchor.constraint(equalToConstant: 130).isActive = true
         
     }
     

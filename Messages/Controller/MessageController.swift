@@ -29,10 +29,12 @@ class MessageController: UITableViewController {
     func loadMessageAndContact(){
         let ref = Database.database().reference().child("Message").observe(.childAdded, with: { (snapshot) in
             let ss = snapshot.value as! [String:AnyObject]
-           
+            
             let mess = Messages()
             mess.sendText = ss["sendtext"] as? String
             mess.toId = ss["toId"] as? String
+            mess.timeStamp = ss["timeStamp"] as? NSNumber
+            print(mess.timeStamp)
          //   self.msg.append(mess)
             if let id = mess.toId {
                 
@@ -40,6 +42,22 @@ class MessageController: UITableViewController {
                 print("values : \(self.messageDictionary[id])")
                 self.msg = Array(self.messageDictionary.values)
                 print("dictionary message: \(self.msg)")
+                
+            
+                self.msg.sort(by: { (m1, m2) -> Bool in
+                    let ts1value : Int
+                    let ts2value : Int
+                    if let ts1 = m1.timeStamp {
+                        ts1value = ts1.intValue
+                        if let ts2 = m2.timeStamp {
+                            ts2value = ts2.intValue
+                            
+                          return ts1value > ts2value
+                        }
+                    }
+                    
+                   return true
+                })
             }
            
             self.tableView.reloadData()
