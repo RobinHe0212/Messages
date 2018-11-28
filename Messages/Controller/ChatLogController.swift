@@ -84,6 +84,14 @@ class ChatLogController : UICollectionViewController, UITextFieldDelegate{
                 fatalError()
                 return
             }
+        let userMsgRef = Database.database().reference().child("user-Messages").child(fromId)
+        let msgId = msgData.key
+            print(msgId!)
+            userMsgRef.setValue([msgId:1])
+        let toUserref = Database.database().reference().child("user-Messages").child(toId)
+            toUserref.setValue([msgId:1])
+            
+            
             self.textMessage.text = ""
         }
         

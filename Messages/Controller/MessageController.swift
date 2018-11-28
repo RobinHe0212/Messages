@@ -20,52 +20,104 @@ class MessageController: UITableViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "new_message_icon"), style: .plain, target: self, action: #selector(writeNewMessage))
        checkIfUserLoginIn()
             
-        loadMessageAndContact()
+     //   loadMessageAndContact()
+        
+        
         tableView.register(CustomCell.self, forCellReuseIdentifier: customCellId)
+       
         
     }
     var messageDictionary = [String:Messages]()
     
-    func loadMessageAndContact(){
-        let ref = Database.database().reference().child("Message").observe(.childAdded, with: { (snapshot) in
-            let ss = snapshot.value as! [String:AnyObject]
-            
-            let mess = Messages()
-            mess.sendText = ss["sendtext"] as? String
-            mess.toId = ss["toId"] as? String
-            mess.timeStamp = ss["timeStamp"] as? NSNumber
-            print(mess.timeStamp)
-         //   self.msg.append(mess)
-            if let id = mess.toId {
+    
+    func loadMessageAndMultiplyUserSupport(){
+        guard let currentUserId = Auth.auth().currentUser?.uid else{return}
+        let msgUser = Database.database().reference().child("user-Messages").child(currentUserId).observe(.childAdded, with: { (snapshot) in
+            let key = snapshot.key
+            Database.database().reference().child("Message").child(key).observe(.value, with: { (sc) in
                 
-                self.messageDictionary[id] = mess
-                print("values : \(self.messageDictionary[id])")
-                self.msg = Array(self.messageDictionary.values)
-                print("dictionary message: \(self.msg)")
+                let ss = sc.value as! [String:AnyObject]
+                let mess = Messages()
+                mess.fromId = ss["fromId"] as? String
+                mess.sendText = ss["sendtext"] as? String
+                mess.toId = ss["toId"] as? String
+                mess.timeStamp = ss["timeStamp"] as? NSNumber
+                print(mess.timeStamp)
                 
-            
-                self.msg.sort(by: { (m1, m2) -> Bool in
-                    let ts1value : Int
-                    let ts2value : Int
-                    if let ts1 = m1.timeStamp {
-                        ts1value = ts1.intValue
-                        if let ts2 = m2.timeStamp {
-                            ts2value = ts2.intValue
-                            
-                          return ts1value > ts2value
-                        }
-                    }
+                if let id = mess.toId {
                     
-                   return true
-                })
-            }
-           
-            self.tableView.reloadData()
+                    self.messageDictionary[id] = mess
+                    print("values : \(self.messageDictionary[id])")
+                    self.msg = Array(self.messageDictionary.values)
+                    print("dictionary message: \(self.msg)")
+                    
+                    
+                    self.msg.sort(by: { (m1, m2) -> Bool in
+                        let ts1value : Int
+                        let ts2value : Int
+                        if let ts1 = m1.timeStamp {
+                            ts1value = ts1.intValue
+                            if let ts2 = m2.timeStamp {
+                                ts2value = ts2.intValue
+                                
+                                return ts1value > ts2value
+                            }
+                        }
+                        
+                        return true
+                    })
+                }
+                 self.tableView.reloadData()
+                
+            })
             
+           
         }, withCancel: nil)
         
-        
+       
     }
+    
+    
+//    func loadMessageAndContact(){
+//        let ref = Database.database().reference().child("Message").observe(.childAdded, with: { (snapshot) in
+//            let ss = snapshot.value as! [String:AnyObject]
+//
+//            let mess = Messages()
+//            mess.sendText = ss["sendtext"] as? String
+//            mess.toId = ss["toId"] as? String
+//            mess.timeStamp = ss["timeStamp"] as? NSNumber
+//            print(mess.timeStamp)
+//
+//            if let id = mess.toId {
+//
+//                self.messageDictionary[id] = mess
+//                print("values : \(self.messageDictionary[id])")
+//                self.msg = Array(self.messageDictionary.values)
+//                print("dictionary message: \(self.msg)")
+//
+//
+//                self.msg.sort(by: { (m1, m2) -> Bool in
+//                    let ts1value : Int
+//                    let ts2value : Int
+//                    if let ts1 = m1.timeStamp {
+//                        ts1value = ts1.intValue
+//                        if let ts2 = m2.timeStamp {
+//                            ts2value = ts2.intValue
+//
+//                          return ts1value > ts2value
+//                        }
+//                    }
+//
+//                   return true
+//                })
+//            }
+//
+//            self.tableView.reloadData()
+//
+//        }, withCancel: nil)
+//
+//
+//    }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return msg.count
@@ -144,6 +196,12 @@ class MessageController: UITableViewController {
     
     
     func setUpNavIconAndName(user:Users){
+        
+        msg.removeAll()
+        messageDictionary.removeAll()
+        tableView.reloadData()
+
+        loadMessageAndMultiplyUserSupport()
         
         let titleContainer = UIView()
         titleContainer.frame = CGRect(x: 0, y: 0, width: 100, height: 40)

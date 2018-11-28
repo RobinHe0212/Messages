@@ -130,6 +130,8 @@ class LoginInController : UIViewController {
         setUpForToggle()
     }
     
+  
+    
     func setUpForToggle(){
         toggleButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         toggleButton.bottomAnchor.constraint(equalTo: inputContainerView.topAnchor, constant: -15).isActive = true

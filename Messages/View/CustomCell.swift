@@ -12,22 +12,7 @@ class CustomCell : UITableViewCell {
     
     var message : Messages?{
         didSet{
-            
-            
-            if let id = message?.toId{
-                let ref = Database.database().reference().child("userInfo").child(id).observe(.value, with: { (snapshot) in
-                    print(snapshot.value!)
-                    if let dictionary = snapshot.value as? [String:AnyObject]{
-                        self.textLabel?.text = dictionary["name"] as? String
-                        if let image = dictionary["imageUrl"] as? String{
-                            
-                            self.imageCell.loadImageUsingCacheFromUrl(urlString: image)
-                            
-                        }
-                    }
-                    
-                }, withCancel: nil)
-                
+                setupNameAndProfileImage()
                 detailTextLabel?.text = message?.sendText
                 if let timeSeconds = message?.timeStamp?.doubleValue {
                     let timestampDate = NSDate(timeIntervalSince1970: timeSeconds) as Date
@@ -39,9 +24,39 @@ class CustomCell : UITableViewCell {
                 
                 
                 
-            }
             
             
+            
+        }
+        
+        
+    }
+    
+    func setupNameAndProfileImage(){
+        let partnerId : String?
+        print("fromId \(message?.fromId)")
+        print("current \(Auth.auth().currentUser?.uid)")
+        if message?.fromId == Auth.auth().currentUser?.uid {
+            partnerId = message?.toId
+            print("from : \(partnerId)")
+        }else{
+            partnerId = message?.fromId
+             print("to : \(partnerId)")
+        }
+        
+        if let id = partnerId{
+            let ref = Database.database().reference().child("userInfo").child(id).observe(.value, with: { (snapshot) in
+                print("check fromTo \(snapshot.value!)")
+                if let dictionary = snapshot.value as? [String:AnyObject]{
+                    self.textLabel?.text = dictionary["name"] as? String
+                    if let image = dictionary["imageUrl"] as? String{
+                        
+                        self.imageCell.loadImageUsingCacheFromUrl(urlString: image)
+                        
+                    }
+                }
+                
+            }, withCancel: nil)
         }
         
         

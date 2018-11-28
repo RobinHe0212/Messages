@@ -39,6 +39,7 @@ extension LoginInController : UIImagePickerControllerDelegate , UINavigationCont
                     print("Login in success")
                     self.messageController.fetchUserDataAndNavBar()
                     self.dismiss(animated: true, completion: nil)
+                   
                 }
                 
             }
