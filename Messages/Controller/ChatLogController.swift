@@ -10,6 +10,11 @@ import UIKit
 import Firebase
 class ChatLogController : UICollectionViewController, UITextFieldDelegate,UICollectionViewDelegateFlowLayout{
     
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        collectionView.collectionViewLayout.invalidateLayout()
+    }
+    
     var msgAll = [Messages]()
     var user: Users? {
         didSet{
@@ -49,14 +54,23 @@ class ChatLogController : UICollectionViewController, UITextFieldDelegate,UIColl
     let chatCellId = "chatCellId"
     override func viewDidLoad() {
         super.viewDidLoad()
+        collectionView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 60, right: 0)
+        collectionView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
         collectionView.backgroundColor = .white
         setUpchatLayout()
+        
+        collectionView.alwaysBounceVertical = true
         collectionView.register(ChatCell.self, forCellWithReuseIdentifier: chatCellId)
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
        let cell =  collectionView.dequeueReusableCell(withReuseIdentifier: chatCellId, for: indexPath) as! ChatCell
         cell.textView.text = msgAll[indexPath.row].sendText
+        if let text = msgAll[indexPath.row].sendText {
+            
+            cell.bubblewidthAnchor?.constant = estimatedbubbleHeight(text: text).width + 32
+            
+        }
         
         return cell
     }
@@ -66,8 +80,24 @@ class ChatLogController : UICollectionViewController, UITextFieldDelegate,UIColl
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.width, height: 60)
+        var height :CGFloat = 80
+        if let text = msgAll[indexPath.row].sendText {
+             height = estimatedbubbleHeight(text: text ).height+20
+            
+        }
+       
+        
+        return CGSize(width: view.frame.width, height: height)
     }
+    
+    func estimatedbubbleHeight(text:String) -> CGRect{
+        let size = CGSize(width: 200, height: 1000)
+        let option = NSStringDrawingOptions.usesFontLeading.union(.usesLineFragmentOrigin)
+        return NSString(string: text).boundingRect(with: size, options: option, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 16)], context: nil)
+        
+        
+    }
+    
     
     func setUpchatLayout(){
         

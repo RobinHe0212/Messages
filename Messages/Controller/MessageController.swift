@@ -44,12 +44,10 @@ class MessageController: UITableViewController {
                 mess.timeStamp = ss["timeStamp"] as? NSNumber
                 print("timeStamp \(mess.timeStamp?.stringValue)")
                 
-                if let id = mess.toId {
+                if let partnerId = mess.getPartnerId() {
                     
-                    self.messageDictionary[id] = mess
-                    print("values : \(self.messageDictionary[id])")
+                    self.messageDictionary[partnerId] = mess
                     self.msg = Array(self.messageDictionary.values)
-                    print("dictionary message: \(self.msg)")
                     
                     
                     self.msg.sort(by: { (m1, m2) -> Bool in

@@ -12,7 +12,9 @@ class ChatCell : UICollectionViewCell{
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .white
+        addSubview(bubbleView)
         addSubview(textView)
+        
         setUpConstraints()
     }
     let textView : UITextView = {
@@ -20,7 +22,7 @@ class ChatCell : UICollectionViewCell{
         let text = UITextView()
         text.text = "sample code"
         text.translatesAutoresizingMaskIntoConstraints = false
-        text.backgroundColor = .blue
+        text.backgroundColor = .clear
         text.font = UIFont.systemFont(ofSize: 16)
         text.textColor = .white
         return text
@@ -28,13 +30,29 @@ class ChatCell : UICollectionViewCell{
         
     }()
     
+    let bubbleView : UIView = {
+        let bubble = UIView()
+        bubble.backgroundColor = UIColor(r: 0, g: 137, b: 249)
+        bubble.layer.cornerRadius = 16
+        bubble.layer.masksToBounds = true
+        bubble.translatesAutoresizingMaskIntoConstraints = false
+        return bubble
+        
+        
+    }()
+    var bubblewidthAnchor : NSLayoutConstraint?
+    
     func setUpConstraints(){
-        textView.rightAnchor.constraint(equalTo: rightAnchor, constant: 8).isActive = true
-        textView.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        textView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor, constant: 8).isActive = true
+        textView.rightAnchor.constraint(equalTo: bubbleView.rightAnchor).isActive = true
         textView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        textView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        textView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
         
-        
+        bubbleView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -8).isActive = true
+        bubblewidthAnchor = bubbleView.widthAnchor.constraint(equalToConstant: 200)
+        bubblewidthAnchor!.isActive = true
+        bubbleView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        bubbleView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
         
     }
     
