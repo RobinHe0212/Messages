@@ -13,6 +13,7 @@ class CustomCell : UITableViewCell {
     var message : Messages?{
         didSet{
                 setupNameAndProfileImage()
+
                 detailTextLabel?.text = message?.sendText
                 if let timeSeconds = message?.timeStamp?.doubleValue {
                     let timestampDate = NSDate(timeIntervalSince1970: timeSeconds) as Date
@@ -34,14 +35,11 @@ class CustomCell : UITableViewCell {
     
     func setupNameAndProfileImage(){
         let partnerId : String?
-        print("fromId \(message?.fromId)")
-        print("current \(Auth.auth().currentUser?.uid)")
+        
         if message?.fromId == Auth.auth().currentUser?.uid {
             partnerId = message?.toId
-            print("from : \(partnerId)")
         }else{
             partnerId = message?.fromId
-             print("to : \(partnerId)")
         }
         
         if let id = partnerId{

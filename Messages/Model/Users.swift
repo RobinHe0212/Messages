@@ -13,4 +13,7 @@ class Users : NSObject {
     var email : String?
     var name : String?
     var imageUrl : String?
+    
+    
+    
 }

@@ -8,21 +8,65 @@
 
 import UIKit
 import Firebase
-class ChatLogController : UICollectionViewController, UITextFieldDelegate{
+class ChatLogController : UICollectionViewController, UITextFieldDelegate,UICollectionViewDelegateFlowLayout{
     
+    var msgAll = [Messages]()
     var user: Users? {
         didSet{
             navigationItem.title = user?.name
-            
+            observeMessages()
         }
         
     }
     
+    func observeMessages(){
+        
+        guard let uid = Auth.auth().currentUser?.uid else{return}
+        let ref = Database.database().reference().child("user-Messages").child(uid).observe(.childAdded, with: { (snapshot) in
+            let msgRef = Database.database().reference().child("Message").child(snapshot.key).observe(.value, with: { (ss) in
+                
+                guard let dic = ss.value as? [String:AnyObject] else{return}
+                print(dic)
+                let msg = Messages()
+                msg.sendText = dic["sendtext"] as? String
+                msg.timeStamp = dic["timeStamp"] as? NSNumber
+                msg.fromId = dic["fromId"] as? String
+                msg.toId = dic["toId"] as? String
+                if msg.getPartnerId() == self.user?.userId {
+                    self.msgAll.append(msg)
+                    
+                }
+                
+                 self.collectionView.reloadData()
+                
+               
+            }, withCancel: nil)
+        }, withCancel: nil)
+        
+        
+    }
+    
+    let chatCellId = "chatCellId"
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.backgroundColor = .white
         setUpchatLayout()
+        collectionView.register(ChatCell.self, forCellWithReuseIdentifier: chatCellId)
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+       let cell =  collectionView.dequeueReusableCell(withReuseIdentifier: chatCellId, for: indexPath) as! ChatCell
+        cell.textView.text = msgAll[indexPath.row].sendText
         
+        return cell
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return msgAll.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: view.frame.width, height: 60)
     }
     
     func setUpchatLayout(){
@@ -84,12 +128,13 @@ class ChatLogController : UICollectionViewController, UITextFieldDelegate{
                 fatalError()
                 return
             }
-        let userMsgRef = Database.database().reference().child("user-Messages").child(fromId)
-        let msgId = msgData.key
-            print(msgId!)
-            userMsgRef.setValue([msgId:1])
-        let toUserref = Database.database().reference().child("user-Messages").child(toId)
-            toUserref.setValue([msgId:1])
+            guard let msgId = msgData.key else{return}
+            print(msgId)
+        let userMsgRef = Database.database().reference().child("user-Messages").child(fromId).child(msgId)
+        
+            userMsgRef.setValue(1)
+        let toUserref = Database.database().reference().child("user-Messages").child(toId).child(msgId)
+            toUserref.setValue(1)
             
             
             self.textMessage.text = ""

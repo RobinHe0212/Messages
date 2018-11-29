@@ -42,7 +42,7 @@ class MessageController: UITableViewController {
                 mess.sendText = ss["sendtext"] as? String
                 mess.toId = ss["toId"] as? String
                 mess.timeStamp = ss["timeStamp"] as? NSNumber
-                print(mess.timeStamp)
+                print("timeStamp \(mess.timeStamp?.stringValue)")
                 
                 if let id = mess.toId {
                     
@@ -93,6 +93,27 @@ class MessageController: UITableViewController {
         
         customCell.message = message
         return customCell
+    }
+    
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+       let messag =  msg[indexPath.row]
+        
+        guard let partnerId = messag.getPartnerId() else{return}
+        let user = Database.database().reference().child("userInfo").child(partnerId).observe(.value, with: { (snapshot) in
+            guard let dic = snapshot.value as? [String:AnyObject] else{return}
+            let use = Users()
+            use.email = dic["name"] as? String
+            use.imageUrl = dic["imageUrl"] as? String
+            use.name = dic["name"] as? String
+            use.userId = partnerId
+        
+            self.tapToMessage(user: use)
+            
+        }, withCancel: nil)
+        
+       
     }
     
    @objc func writeNewMessage(){
