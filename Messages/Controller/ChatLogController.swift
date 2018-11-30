@@ -66,13 +66,44 @@ class ChatLogController : UICollectionViewController, UITextFieldDelegate,UIColl
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
        let cell =  collectionView.dequeueReusableCell(withReuseIdentifier: chatCellId, for: indexPath) as! ChatCell
         cell.textView.text = msgAll[indexPath.row].sendText
+        let msage = msgAll[indexPath.row]
+        setUpBubbleColor(message: msage, cell: cell)
+        
         if let text = msgAll[indexPath.row].sendText {
             
             cell.bubblewidthAnchor?.constant = estimatedbubbleHeight(text: text).width + 32
             
         }
+       
+        
         
         return cell
+    }
+    
+    func setUpBubbleColor(message:Messages,cell:ChatCell){
+        
+        if let profileimageUrl = user?.imageUrl {
+             cell.imageProfile.loadImageUsingCacheFromUrl(urlString: profileimageUrl)
+            
+        }
+        
+       
+        
+        if message.fromId == Auth.auth().currentUser?.uid {
+            //outgoing blue
+            cell.bubbleView.backgroundColor = ChatCell.bubbleOutgoingColor
+            cell.textView.textColor = .white
+            cell.bubbleleftAnchor?.isActive = false
+            cell.bubblerightAnchor?.isActive = true
+            cell.imageProfile.isHidden = true
+        }else{
+            cell.bubbleleftAnchor?.isActive = true
+            cell.bubblerightAnchor?.isActive = false
+            cell.bubbleView.backgroundColor = UIColor(r: 240, g: 240, b: 240)
+            cell.textView.textColor = .black
+            cell.imageProfile.isHidden = false
+        }
+        
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -114,7 +145,7 @@ class ChatLogController : UICollectionViewController, UITextFieldDelegate,UIColl
         textMessage.centerYAnchor.constraint(equalTo: textContainer.centerYAnchor).isActive = true
         textMessage.leftAnchor.constraint(equalTo: textContainer.leftAnchor, constant: 8).isActive = true
         textMessage.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        textMessage.widthAnchor.constraint(equalTo: collectionView.widthAnchor).isActive = true
+        textMessage.rightAnchor.constraint(equalTo: collectionView.rightAnchor, constant :-68).isActive = true
         
         sendButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
         sendButton.heightAnchor.constraint(equalTo: textMessage.heightAnchor).isActive = true

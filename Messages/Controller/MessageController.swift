@@ -65,7 +65,11 @@ class MessageController: UITableViewController {
                         return true
                     })
                 }
-                 self.tableView.reloadData()
+                DispatchQueue.main.async {
+                    print("print in the console")
+                     self.tableView.reloadData()
+                }
+                
                 
             })
             

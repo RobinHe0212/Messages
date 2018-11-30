@@ -14,7 +14,7 @@ class ChatCell : UICollectionViewCell{
         backgroundColor = .white
         addSubview(bubbleView)
         addSubview(textView)
-        
+        addSubview(imageProfile)
         setUpConstraints()
     }
     let textView : UITextView = {
@@ -30,9 +30,24 @@ class ChatCell : UICollectionViewCell{
         
     }()
     
+    let imageProfile : UIImageView = {
+        let img = UIImageView()
+        img.image = UIImage(named: "flower")
+        img.translatesAutoresizingMaskIntoConstraints = false
+        img.contentMode = .scaleAspectFill
+        img.layer.cornerRadius = 16
+        img.layer.masksToBounds = true
+        return img
+        
+        
+        
+    }()
+    
+    static let bubbleOutgoingColor = UIColor(r: 0, g: 137, b: 249)
+    
     let bubbleView : UIView = {
         let bubble = UIView()
-        bubble.backgroundColor = UIColor(r: 0, g: 137, b: 249)
+        bubble.backgroundColor = bubbleOutgoingColor
         bubble.layer.cornerRadius = 16
         bubble.layer.masksToBounds = true
         bubble.translatesAutoresizingMaskIntoConstraints = false
@@ -41,6 +56,8 @@ class ChatCell : UICollectionViewCell{
         
     }()
     var bubblewidthAnchor : NSLayoutConstraint?
+    var bubbleleftAnchor : NSLayoutConstraint?
+    var bubblerightAnchor : NSLayoutConstraint?
     
     func setUpConstraints(){
         textView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor, constant: 8).isActive = true
@@ -48,12 +65,20 @@ class ChatCell : UICollectionViewCell{
         textView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         textView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
         
-        bubbleView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -8).isActive = true
+        bubblerightAnchor = bubbleView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -8)
+        bubblerightAnchor!.isActive = false
+        bubbleleftAnchor = bubbleView.leftAnchor.constraint(equalTo: imageProfile.rightAnchor, constant: 8)
+        bubbleleftAnchor!.isActive = false
+        
         bubblewidthAnchor = bubbleView.widthAnchor.constraint(equalToConstant: 200)
         bubblewidthAnchor!.isActive = true
         bubbleView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         bubbleView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
         
+        imageProfile.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+        imageProfile.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 8).isActive = true
+        imageProfile.widthAnchor.constraint(equalToConstant: 32).isActive = true
+        imageProfile.heightAnchor.constraint(equalToConstant: 32).isActive = true
     }
     
     required init?(coder aDecoder: NSCoder) {
