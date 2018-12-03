@@ -14,6 +14,7 @@ class Messages : NSObject{
     var sendText : String?
     var timeStamp : NSNumber?
     var toId : String?
+    var imageUrl : String?
     
     func getPartnerId() -> String?{
         return fromId == Auth.auth().currentUser?.uid ? toId : fromId

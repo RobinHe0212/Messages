@@ -33,45 +33,53 @@ class MessageController: UITableViewController {
     func loadMessageAndMultiplyUserSupport(){
         guard let currentUserId = Auth.auth().currentUser?.uid else{return}
         let msgUser = Database.database().reference().child("user-Messages").child(currentUserId).observe(.childAdded, with: { (snapshot) in
-            let key = snapshot.key
-            Database.database().reference().child("Message").child(key).observe(.value, with: { (sc) in
+            let userId = snapshot.key
+            Database.database().reference().child("user-Messages").child(currentUserId).child(userId).observe(.childAdded, with: { (snap) in
+                let msgId = snap.key
                 
-                let ss = sc.value as! [String:AnyObject]
-                let mess = Messages()
-                mess.fromId = ss["fromId"] as? String
-                mess.sendText = ss["sendtext"] as? String
-                mess.toId = ss["toId"] as? String
-                mess.timeStamp = ss["timeStamp"] as? NSNumber
-                print("timeStamp \(mess.timeStamp?.stringValue)")
-                
-                if let partnerId = mess.getPartnerId() {
+                Database.database().reference().child("Message").child(msgId).observe(.value, with: { (sc) in
                     
-                    self.messageDictionary[partnerId] = mess
-                    self.msg = Array(self.messageDictionary.values)
+                    let ss = sc.value as! [String:AnyObject]
+                    let mess = Messages()
+                    mess.fromId = ss["fromId"] as? String
+                    mess.sendText = ss["sendtext"] as? String
+                    mess.toId = ss["toId"] as? String
+                    mess.timeStamp = ss["timeStamp"] as? NSNumber
+                    print("timeStamp \(mess.timeStamp?.stringValue)")
                     
-                    
-                    self.msg.sort(by: { (m1, m2) -> Bool in
-                        let ts1value : Int
-                        let ts2value : Int
-                        if let ts1 = m1.timeStamp {
-                            ts1value = ts1.intValue
-                            if let ts2 = m2.timeStamp {
-                                ts2value = ts2.intValue
-                                
-                                return ts1value > ts2value
-                            }
-                        }
+                    if let partnerId = mess.getPartnerId() {
                         
-                        return true
-                    })
-                }
-                DispatchQueue.main.async {
-                    print("print in the console")
-                     self.tableView.reloadData()
-                }
+                        self.messageDictionary[partnerId] = mess
+                        self.msg = Array(self.messageDictionary.values)
+                        
+                        
+                        self.msg.sort(by: { (m1, m2) -> Bool in
+                            let ts1value : Int
+                            let ts2value : Int
+                            if let ts1 = m1.timeStamp {
+                                ts1value = ts1.intValue
+                                if let ts2 = m2.timeStamp {
+                                    ts2value = ts2.intValue
+                                    
+                                    return ts1value > ts2value
+                                }
+                            }
+                            
+                            return true
+                        })
+                    }
+                    DispatchQueue.main.async {
+                        print("print in the console")
+                        self.tableView.reloadData()
+                    }
+                })
                 
                 
-            })
+                
+            }, withCancel: nil)
+            
+            
+            
             
            
         }, withCancel: nil)
